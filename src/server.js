@@ -38,14 +38,14 @@ const startApplication = async () => {
     if (err.status === 403) {
       return res.status(403).sendFile(join(fullDirName, 'views', 'errors', '403.html'))
     }
-
-    if (err.status === 404) {
-      return res.status(404).sendFile(join(fullDirName, 'views', 'errors', '404.html'))
-    }
     */
 
+    if (err.status === 404) {
+      return res.status(404).json({ message: "Not Found", status: "404" })
+    }
+
     if (err.status === 500) {
-      return res.status(500).json({ message: "Internal Server Error" })
+      return res.status(500).json({ message: "Internal Server Error", status: "500" })
     }
   })
 

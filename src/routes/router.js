@@ -4,13 +4,13 @@
 
 import express from 'express'
 import createError from 'http-errors'
-// import { SessionController } from '../controllers/session-controller.js'
+// import { #Controller } from '../controllers/#'
 
 export const router = express.Router()
 
-// const controller = new SessionController()
+// const controller = new #Controller()
 
-router.use('/', (req, res, next) => {res.json({ message: "Welcome to auth service!" })})
+router.get('/', (req, res, next) => {res.json({ message: "Welcome to auth service!" })})
 
 
 
