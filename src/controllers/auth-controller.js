@@ -19,14 +19,20 @@ export class AuthController {
   async register (req, res, next) {
 
     try {
-      // console.log(req.body) // Funkar!
+      console.log(req.body) // Funkar!
 
       const email = req.body.email
       const password = req.body.password
-      
-      console.log(email, ' , ', password)
 
-      // kontrollera password krav och om email är en email
+      // Fixa: Lägg till Dublicate keys err 409
+
+      if (email === undefined || password === undefined) {
+        return res.status(400).json({ message: "Enter both email and password!" })
+      } else if (password.length > 1000) {
+        return res.status(400).json({ message: "Password is too long (max 1000)." })
+      } else if (password.length < 10) {
+         return res.status(400).json({ message: "Password is too short (min 10)." })
+      }
 
       if (email && password !== undefined) {
         const uniqueEmail = await Account.find({ email: email })
@@ -39,19 +45,19 @@ export class AuthController {
           const accountId = (await Account.find({ email: email })).map(Account => ({
             id: Account._id
           }))
-          res.status(201).send(accountId[0])
+          return res.status(201).send(accountId[0])
         } else {
-          res.json({ message: "Email is already registered!" })
+          return res.json({ message: "Email is already registered!" })
         }
       } else {
-        res.json({ message: "Enter both email and password!" }) // Fix!
+        const error = new Error('Internal Server Error')
+        error.status = 500
+        next(error)
       }
     } catch (err) {
       const error = new Error('Internal Server Error')
       error.status = 500
       next(error)
-      
-
     }
   }
 }
