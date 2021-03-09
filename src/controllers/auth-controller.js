@@ -3,16 +3,56 @@
  */
 
 import { Account } from '../models/account-model.js'
+import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
+import { readFileSync } from 'fs'
+
 export class AuthController {
-  login (req, res, next) {
+  async login (req, res, next) {
     try {
       // console.log(req.body)
+      const email = req.body.email
+      const password = req.body.password
 
-      // res.json({ message: "login!!!" })
-    } catch (error) {
-      // ToDo: Skapa error!
+      console.log(email, ' ' , password)
+
+      const user = (await Account.find({ email: email })).map(Account => ({
+        id: Account._id,
+        email: Account.email,
+        password: Account.password
+      }))
+
+      // console.log(user[0])
+
+      // validera email/lösen??
+
+      const comparePassword = await bcrypt.compare(password, user[0].password)
+      console.log(comparePassword)
+
+      if (comparePassword === true) {
+        const payload = {
+          sub: user[0].email,
+          x_permission_level: 1 // user.permissionLevel
+        }
+        const privateKey = readFileSync('private.pem', 'utf-8')
+        const accessToken = jwt.sign(payload, privateKey, { // process.env.ACCESS_TOKEN_SECRET
+          algorithm: 'RS256', // Byt till RS256! hs är symmetrisk!
+          expiresIn: process.env.ACCESS_TOKEN_LIFE
+        })
+
+        // console.log(accessToken)
+
+        // skapa refreshtoken?? rad 41: https://gitlab.lnu.se/1dv026/content/examples/example-restful-tasks-with-jwt/-/blob/master/src/controllers/api/account-controller.js
+        res.status(200).json({ access_token: accessToken })
+      } else {
+        // gör något!
+      }
+    } catch (err) {
+      console.log(err)
+      const error = new Error('Internal Server Error')
+      error.status = 500
+      next(error)
     }
   }
 
