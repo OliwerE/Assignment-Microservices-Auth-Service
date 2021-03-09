@@ -4,14 +4,14 @@
 
 import express from 'express'
 import createError from 'http-errors'
-// import { #Controller } from '../controllers/#'
+import { AuthController } from '../controllers/auth-controller.js'
 
 export const router = express.Router()
 
-// const controller = new #Controller()
+const controller = new AuthController()
 
-router.get('/login', (req, res, next) => {res.json({ message: "login!" })})
-router.get('/register', (req, res, next) => {res.json({ message: "register!" })})
+router.get('/login', controller.login) // Byt till post!
+router.get('/register', controller.register) // Byt till post!
 
 // All other pages
 router.use('*', (req, res, next) => next(createError(404)))
