@@ -36,15 +36,22 @@ export class AuthController {
             password: await bcrypt.hash(password, 8) // Flytta ev till model, riskerar att sparas utan kryptering annars!
           })
           await newAccount.save() // Saves new account in mongodb
-          res.json({ message: "Your account has been created!" })
+          const accountId = (await Account.find({ email: email })).map(Account => ({
+            id: Account._id
+          }))
+          res.status(201).send(accountId[0])
         } else {
           res.json({ message: "Email is already registered!" })
         }
       } else {
         res.json({ message: "Enter both email and password!" }) // Fix!
       }
-    } catch (error) {
-      // ToDo: Skapa error!
+    } catch (err) {
+      const error = new Error('Internal Server Error')
+      error.status = 500
+      next(error)
+      
+
     }
   }
 }
