@@ -46,7 +46,7 @@ export class AuthController {
         // skapa refreshtoken?? rad 41: https://gitlab.lnu.se/1dv026/content/examples/example-restful-tasks-with-jwt/-/blob/master/src/controllers/api/account-controller.js
         res.status(200).json({ access_token: accessToken })
       } else {
-        // gör något!
+        res.status(409).json({ message: "Invalid credentials!" })
       }
     } catch (err) {
       console.log(err)
