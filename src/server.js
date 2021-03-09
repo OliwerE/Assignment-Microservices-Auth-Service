@@ -11,7 +11,7 @@ import logger from 'morgan'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 // import { router } from './routes/router.js'
-// import { connectDB } from './config/mongoose.js'
+import { connectDB } from './config/mongoose.js'
 
 /**
  * Function represents an Express web server configuration.
@@ -19,9 +19,9 @@ import { fileURLToPath } from 'url'
 const startApplication = async () => {
   const app = express()
 
-  // await connectDB(app) // connects to mongoDB and configures session options
+  await connectDB(app) // connects to mongoDB and configures session options
 
-  const fullDirName = dirname(fileURLToPath(import.meta.url))
+  // const fullDirName = dirname(fileURLToPath(import.meta.url))
 
   app.use(helmet()) // Security http headers
 
@@ -31,7 +31,7 @@ const startApplication = async () => {
 
   // Session options configured in ./config/mongoose.js
 
-  app.use('/', router)
+  // app.use('/', router)
 
   app.use((err, req, res, next) => {
     /* Fixa alla Error koder!
