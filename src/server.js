@@ -10,7 +10,7 @@ import helmet from 'helmet'
 import logger from 'morgan'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-// import { router } from './routes/router.js'
+import { router } from './routes/router.js'
 import { connectDB } from './config/mongoose.js'
 
 /**
@@ -31,7 +31,7 @@ const startApplication = async () => {
 
   // Session options configured in ./config/mongoose.js
 
-  // app.use('/', router)
+  app.use('/', router)
 
   app.use((err, req, res, next) => {
     /* Fixa alla Error koder!
