@@ -3,6 +3,7 @@
  */
 
 import { Account } from '../models/account-model.js'
+import bcrypt from 'bcrypt'
 
 export class AuthController {
   login (req, res, next) {
@@ -29,19 +30,19 @@ export class AuthController {
 
       if (email && password !== undefined) {
         const uniqueEmail = await Account.find({ email: email })
-
         if (uniqueEmail.length === 0) {
-          // Lägg till!
-          res.json({ message: "Email is unique!" }) // Fix!
+          const newAccount = new Account({
+            email: email,
+            password: await bcrypt.hash(password, 8) // Flytta ev till model, riskerar att sparas utan kryptering annars!
+          })
+          await newAccount.save() // Saves new account in mongodb
+          res.json({ message: "Your account has been created!" })
+        } else {
+          res.json({ message: "Email is already registered!" })
         }
-
-
-        console.log(uniqueEmail.length)
       } else {
         res.json({ message: "Enter both email and password!" }) // Fix!
       }
-
-      // res.json({ message: "register!!!" })
     } catch (error) {
       // ToDo: Skapa error!
     }
