@@ -8,14 +8,23 @@ import bcrypt from 'bcrypt'
 
 import { readFileSync } from 'fs'
 
+/**
+ * Class represents the authorization controller.
+ */
 export class AuthController {
+  /**
+   * Used when an user sends a login request.
+   *
+   * @param {object} req - The request object.
+   * @param {object} res - The response object.
+   * @param {Function} next - Next function.
+   */
   async login (req, res, next) {
     try {
-      // console.log(req.body)
       const email = req.body.email
       const password = req.body.password
 
-      console.log(email, ' ' , password)
+      console.log(email, ' ', password)
 
       const user = (await Account.find({ email: email })).map(Account => ({
         id: Account._id,
@@ -23,9 +32,7 @@ export class AuthController {
         password: Account.password
       }))
 
-      // console.log(user[0])
-
-      // validera email/lösen??
+      // validera email/lösen?? FIX error 500 är fel om email eller password glöms!
 
       const comparePassword = await bcrypt.compare(password, user[0].password)
       console.log(comparePassword)
@@ -41,12 +48,9 @@ export class AuthController {
           expiresIn: process.env.ACCESS_TOKEN_LIFE
         })
 
-        // console.log(accessToken)
-
-        // skapa refreshtoken?? rad 41: https://gitlab.lnu.se/1dv026/content/examples/example-restful-tasks-with-jwt/-/blob/master/src/controllers/api/account-controller.js
         res.status(200).json({ access_token: accessToken })
       } else {
-        res.status(409).json({ message: "Invalid credentials!" })
+        res.status(409).json({ message: 'Invalid credentials!' })
       }
     } catch (err) {
       console.log(err)
@@ -56,8 +60,15 @@ export class AuthController {
     }
   }
 
+  /**
+   * Used when an user sends a register account request.
+   *
+   * @param {object} req - The request object.
+   * @param {object} res - The response object.
+   * @param {Function} next - Next function.
+   * @returns {object} - Sends a response object to the client.
+   */
   async register (req, res, next) {
-
     try {
       console.log(req.body) // Funkar!
 
@@ -67,11 +78,11 @@ export class AuthController {
       // Fixa: Lägg till Dublicate keys err 409
 
       if (email === undefined || password === undefined) {
-        return res.status(400).json({ message: "Enter both email and password!" })
+        return res.status(400).json({ message: 'Enter both email and password!' })
       } else if (password.length > 1000) {
-        return res.status(400).json({ message: "Password is too long (max 1000)." })
+        return res.status(400).json({ message: 'Password is too long (max 1000).' })
       } else if (password.length < 10) {
-         return res.status(400).json({ message: "Password is too short (min 10)." })
+        return res.status(400).json({ message: 'Password is too short (min 10).' })
       }
 
       if (email && password !== undefined) {
@@ -87,7 +98,7 @@ export class AuthController {
           }))
           return res.status(201).send(accountId[0])
         } else {
-          return res.json({ message: "Email is already registered!" })
+          return res.json({ message: 'Email is already registered!' })
         }
       } else {
         const error = new Error('Internal Server Error')
