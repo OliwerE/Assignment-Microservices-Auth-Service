@@ -5,8 +5,10 @@
 import { Account } from '../models/account-model.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import Iseamil from 'isemail'
 
 import { readFileSync } from 'fs'
+import IsEmail from 'isemail'
 
 /**
  * Class represents the authorization controller.
@@ -32,7 +34,9 @@ export class AuthController {
         password: Account.password
       }))
 
-      // validera email/lösen?? FIX error 500 är fel om email eller password glöms!
+      if (email === undefined || password === undefined || !Iseamil.validate(email)) {
+        return res.status(409).json({ message: 'Invalid credentials' })
+      }
 
       const comparePassword = await bcrypt.compare(password, user[0].password)
       console.log(comparePassword)
@@ -40,11 +44,11 @@ export class AuthController {
       if (comparePassword === true) {
         const payload = {
           sub: user[0].email,
-          x_permission_level: 1 // user.permissionLevel
+          x_permission_level: 1
         }
         const privateKey = readFileSync('private.pem', 'utf-8')
-        const accessToken = jwt.sign(payload, privateKey, { // process.env.ACCESS_TOKEN_SECRET
-          algorithm: 'RS256', // Byt till RS256! hs är symmetrisk!
+        const accessToken = jwt.sign(payload, privateKey, {
+          algorithm: 'RS256',
           expiresIn: process.env.ACCESS_TOKEN_LIFE
         })
 
@@ -83,6 +87,8 @@ export class AuthController {
         return res.status(400).json({ message: 'Password is too long (max 1000).' })
       } else if (password.length < 10) {
         return res.status(400).json({ message: 'Password is too short (min 10).' })
+      } else if (!IsEmail.validate(email)) {
+        return res.status(400).json({ message: 'Email is not an email' })
       }
 
       if (email && password !== undefined) {
