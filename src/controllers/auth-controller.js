@@ -74,8 +74,6 @@ export class AuthController {
    */
   async register (req, res, next) {
     try {
-      console.log(req.body) // Funkar!
-
       const email = req.body.email
       const password = req.body.password
 
@@ -87,7 +85,7 @@ export class AuthController {
         return res.status(400).json({ message: 'Password is too long (max 1000).' })
       } else if (password.length < 10) {
         return res.status(400).json({ message: 'Password is too short (min 10).' })
-      } else if (!IsEmail.validate(email)) {
+      } else if (!IsEmail.validate(email)) { // If email is an email adress
         return res.status(400).json({ message: 'Email is not an email' })
       }
 
@@ -96,7 +94,7 @@ export class AuthController {
         if (uniqueEmail.length === 0) {
           const newAccount = new Account({
             email: email,
-            password: await bcrypt.hash(password, 8) // Flytta ev till model, riskerar att sparas utan kryptering annars!
+            password: await bcrypt.hash(password, 8) // Encrypts password
           })
           await newAccount.save() // Saves new account in mongodb
           const accountId = (await Account.find({ email: email })).map(Account => ({

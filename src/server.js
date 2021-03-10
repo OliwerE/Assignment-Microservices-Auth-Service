@@ -27,8 +27,6 @@ const startApplication = async () => {
   app.use('/', router)
 
   app.use((err, req, res, next) => {
-    // Lägg till alla statuskoder här!
-
     if (err.status === 404) {
       return res.status(404).json({ message: 'Not Found', status: '404' })
     }
