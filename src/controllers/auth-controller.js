@@ -5,8 +5,6 @@
 import { Account } from '../models/account-model.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import Iseamil from 'isemail'
-
 import { readFileSync } from 'fs'
 import IsEmail from 'isemail'
 
@@ -20,6 +18,7 @@ export class AuthController {
    * @param {object} req - The request object.
    * @param {object} res - The response object.
    * @param {Function} next - Next function.
+   * @returns {object} - The response object.
    */
   async login (req, res, next) {
     try {
@@ -34,7 +33,7 @@ export class AuthController {
         password: Account.password
       }))
 
-      if (email === undefined || password === undefined || !Iseamil.validate(email)) {
+      if (email === undefined || password === undefined || !IsEmail.validate(email)) {
         return res.status(409).json({ message: 'Invalid credentials' })
       }
 
@@ -52,9 +51,9 @@ export class AuthController {
           expiresIn: process.env.ACCESS_TOKEN_LIFE
         })
 
-        res.status(200).json({ access_token: accessToken })
+        return res.status(200).json({ access_token: accessToken })
       } else {
-        res.status(409).json({ message: 'Invalid credentials!' })
+        return res.status(409).json({ message: 'Invalid credentials!' })
       }
     } catch (err) {
       console.log(err)
