@@ -53,7 +53,7 @@ export class AuthController {
 
         return res.status(200).json({ access_token: accessToken })
       } else {
-        return res.status(409).json({ message: 'Invalid credentials!' })
+        return res.status(401).json({ description: 'Invalid credentials!' })
       }
     } catch (err) {
       console.log(err)
