@@ -34,8 +34,8 @@ export class AuthController {
         password: Account.password
       }))
 
-      if (email === undefined || password === undefined || !IsEmail.validate(email)) {
-        return res.status(409).json({ description: 'Invalid credentials' })
+      if (email === undefined || password === undefined || !IsEmail.validate(email) || user.length <= 0) {
+        return res.status(401).json({ description: 'Invalid credentials' })
       }
 
       const comparePassword = await bcrypt.compare(password, user[0].password)
