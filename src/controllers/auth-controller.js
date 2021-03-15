@@ -35,7 +35,7 @@ export class AuthController {
       }))
 
       if (email === undefined || password === undefined || !IsEmail.validate(email)) {
-        return res.status(409).json({ message: 'Invalid credentials' })
+        return res.status(409).json({ description: 'Invalid credentials' })
       }
 
       const comparePassword = await bcrypt.compare(password, user[0].password)
@@ -74,16 +74,14 @@ export class AuthController {
       const email = req.body.email
       const password = req.body.password
 
-      // Fixa: Lägg till Dublicate keys err 409
-
       if (email === undefined || password === undefined) {
-        return res.status(400).json({ message: 'Enter both email and password!' })
+        return res.status(400).json({ description: 'Enter both email and password!' })
       } else if (password.length > 1000) {
-        return res.status(400).json({ message: 'Password is too long (max 1000).' })
+        return res.status(400).json({ description: 'Password is too long (max 1000).' })
       } else if (password.length < 10) {
-        return res.status(400).json({ message: 'Password is too short (min 10).' })
+        return res.status(400).json({ description: 'Password is too short (min 10).' })
       } else if (!IsEmail.validate(email)) { // If email is an email adress
-        return res.status(400).json({ message: 'Email is not an email' })
+        return res.status(400).json({ description: 'Email is not an email' })
       }
 
       if (email && password !== undefined) {
@@ -98,8 +96,10 @@ export class AuthController {
             id: Account._id
           }))
           return res.status(201).send(accountId[0])
+        } else if (uniqueEmail.length > 0) {
+          return res.status(409).json({ description: 'Duplicated Keys' })
         } else {
-          return res.status(400).json({ message: 'Email is already registered!' })
+          next(createError(500))
         }
       } else {
         next(createError(500))
