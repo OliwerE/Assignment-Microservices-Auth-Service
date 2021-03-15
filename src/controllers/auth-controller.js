@@ -2,6 +2,7 @@
  * Module represents auth controller.
  */
 
+import createError from 'http-errors'
 import { Account } from '../models/account-model.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
@@ -56,10 +57,7 @@ export class AuthController {
         return res.status(401).json({ description: 'Invalid credentials!' })
       }
     } catch (err) {
-      console.log(err)
-      const error = new Error('Internal Server Error')
-      error.status = 500
-      next(error)
+      next(createError(500))
     }
   }
 
@@ -101,17 +99,13 @@ export class AuthController {
           }))
           return res.status(201).send(accountId[0])
         } else {
-          return res.json({ message: 'Email is already registered!' })
+          return res.status(400).json({ message: 'Email is already registered!' })
         }
       } else {
-        const error = new Error('Internal Server Error')
-        error.status = 500
-        next(error)
+        next(createError(500))
       }
     } catch (err) {
-      const error = new Error('Internal Server Error')
-      error.status = 500
-      next(error)
+      next(createError(500))
     }
   }
 }
