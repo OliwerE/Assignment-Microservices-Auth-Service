@@ -43,7 +43,7 @@ export class AuthController {
 
       if (comparePassword === true) {
         const payload = {
-          sub: user[0].email,
+          email: user[0].email,
           x_permission_level: 1
         }
         const privateKey = readFileSync('private.pem', 'utf-8')

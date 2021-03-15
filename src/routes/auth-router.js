@@ -10,6 +10,8 @@ export const router = express.Router()
 
 const controller = new AuthController()
 
+router.get('/', (req, res, next) => { res.json({ message: 'Welcome to auth service!' }) })
+
 router.post('/login', controller.login)
 router.post('/register', controller.register)
 
